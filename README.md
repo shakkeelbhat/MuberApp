@@ -17,6 +17,8 @@ MuberApp is a basic implementation of uber app
 "drivers/register/"       supports [post] method/s                    authentication_classes = [], permission_classes=[]
 "drivers/login/"          supports [post] method/s                    authentication_classes = [],  permission_classes = []
 "drivers/detail/"         supports [get,patch] method/s               authentication_classes = [JSONWebTokenAuthentication], permission_classes=[]
+"drivers/delete/"         supports [delete] method/s                  authentication_classes = [JSONWebTokenAuthentication], permission_classes=[]
+"passengers/delete/"      supports [delete] method/s                  authentication_classes = [JSONWebTokenAuthentication], permission_classes=[]
 
 
 ```
@@ -141,6 +143,19 @@ or
 }
 ```
 ----------------------------------
+## "drivers/delete/"
+```
+Requires authentication_classes = [JSONWebTokenAuthentication], permission_classes = []
+Send a delete request to delete a driver.
 
+```
+----------------------------------
+## passengers/delete/"
+```
+Requires authentication_classes = [JSONWebTokenAuthentication], permission_classes = []
+Send a delete request to delete a passenger.
+
+```
+----------------------------------
 
 
