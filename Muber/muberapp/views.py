@@ -48,7 +48,12 @@ class PassengerLogin(APIView):
         serializer = PassengerLoginSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             username = serializer.validated_data.get('username')
-            user = User.objects.get(username=username)
+            
+            try:
+                user = User.objects.get(username=username)
+                # Continue your logic here if the user exists
+            except User.DoesNotExist:
+                return Response({'message': 'Invalid data. username does not exist'}, status=status.HTTP_400_BAD_REQUEST)
             passenger = Passenger.objects.get(user=user)
             passenger.total_rides += 1
             passenger.save()
@@ -144,7 +149,12 @@ class DriverLogin(APIView):
         serializer = DriverLoginSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             username = serializer.validated_data.get('username')
-
+            try:
+                user = User.objects.get(username=username)
+                # Continue your logic here if the user exists
+            except User.DoesNotExist:
+                return Response({'message': 'Invalid data. username does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+            
     
             return Response({'message': f'User with username [{username}] logged in.', 'token': serializer.validated_data.get('token')}, status=status.HTTP_200_OK)
         else:

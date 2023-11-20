@@ -62,7 +62,7 @@ class PassengerSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        ret.pop('password', None)
+        ret['user'].pop('password', None)
         return ret
 
 
@@ -73,29 +73,31 @@ class PassengerLoginSerializer(serializers.Serializer):
     def validate(self, data):
         username = data.get("username", "")
         password = data.get("password", "")
+        try:
+            if username and password:
+                try:
+                    user = authenticate(request=self.context.get('request'), username=username, password=password)
 
-        if username and password:
-            user = authenticate(request=self.context.get('request'), username=username, password=password)
-            if user:
-                if user.is_active:
-                    try:
-                        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-                        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+                    if user:
+                        try:
+                            if user.is_active:
+                                try:
+                                    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+                                    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-                        payload = jwt_payload_handler(user)
-                        token = jwt_encode_handler(payload)
-                        data["token"] = token
-                    except Exception as e:
-                        raise serializers.ValidationError("Error in generating token")
-                else:
-                    msg = "User is deactivated."
-                    raise exceptions.ValidationError(msg)
-            else:
-                msg = "Unable to login with provided credentials."
-                raise exceptions.ValidationError(msg)
-        else:
-            msg = "Must provide username and password both."
-            raise exceptions.ValidationError(msg)
+                                    payload = jwt_payload_handler(user)
+                                    token = jwt_encode_handler(payload)
+                                    data["token"] = token
+                                except Exception as e:
+                                    raise serializers.ValidationError("Error in generating token")
+                        except:
+                            raise serializers.ValidationError("User is not active")
+                except:
+                    raise serializers.ValidationError("Unable to login with provided credentials")
+
+        except:
+            raise serializers.ValidationError("Must provide both username and password")
+
         return data
 
 
@@ -118,9 +120,13 @@ class DriverSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**user_data)
 
         driver = Driver.objects.create(name=user, **validated_data)
+
         return driver
-
-
+    #complex to python native > json
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['name'].pop('password', None)
+        return ret
 
 class DriverLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -129,30 +135,30 @@ class DriverLoginSerializer(serializers.Serializer):
     def validate(self, data):
         username = data.get("username", "")
         password = data.get("password", "")
-        if username and password:
+        try:
+            if username and password:
 
-            user = authenticate(request=self.context.get('request'), username=username, password=password)
+                    user = authenticate(request=self.context.get('request'), username=username, password=password)
 
-            if user:
-                if user.is_active:
-                    try:
-                        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-                        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+                    if user:
+                            if user.is_active:
+                                try:
+                                    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+                                    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-                        payload = jwt_payload_handler(user)
-                        token = jwt_encode_handler(payload)
-                        data["token"] = token
-                    except Exception as e:
-                        raise serializers.ValidationError("Error in generating token")
-                else:
-                    msg = "User is deactivated."
-                    raise exceptions.ValidationError(msg)
-            else:
-                msg = "Unable to login with provided credentials."
-                raise exceptions.ValidationError(msg)
-        else:
-            msg = "Must provide username and password both."
-            raise exceptions.ValidationError(msg)
+                                    payload = jwt_payload_handler(user)
+                                    token = jwt_encode_handler(payload)
+                                    data["token"] = token
+                                except Exception as e:
+                                    raise serializers.ValidationError("Error in generating token")
+                            else:
+                                raise serializers.ValidationError("User is not active")
+                    else:
+                        raise serializers.ValidationError("Unable to login with provided credentials. user doesn't exist")
+
+        except:
+            raise serializers.ValidationError("Must provide both username and password")
+
         return data
 
 
@@ -182,6 +188,6 @@ class DriverPatchSerializer(serializers.ModelSerializer):
             user_serializer.save()
 
         except:
-            Exception("provided field should include 'name")
+            Exception("provided field should include name,car_model,age,languages parameters")
        
         return instance
