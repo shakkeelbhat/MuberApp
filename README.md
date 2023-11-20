@@ -125,6 +125,8 @@ Format:
 ```
 ----------------------------------
 ## passengers/like/
+### IsPremiumPassenger : A passenger upgrades to Premium if his total_rides are greater than 3.
+
 ```
 Requires authentication_classes = [JSONWebTokenAuthentication], permission_classes = [IsPremiumPassenger]
 IsPremiumPassenger : A passenger upgrades to Premium if his total_rides are greater than 3.
