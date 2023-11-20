@@ -1,0 +1,9 @@
+{
+    "production": {
+        "django_settings": "muber.settings",
+        "profile_name": "default",
+        "project_name": "muber",
+        "runtime": "python3.8",
+        "s3_bucket": "zappa-muber"
+    }
+}
