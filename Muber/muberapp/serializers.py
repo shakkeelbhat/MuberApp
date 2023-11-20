@@ -75,11 +75,11 @@ class PassengerLoginSerializer(serializers.Serializer):
         password = data.get("password", "")
         try:
             if username and password:
-                try:
+
                     user = authenticate(request=self.context.get('request'), username=username, password=password)
 
                     if user:
-                        try:
+                        
                             if user.is_active:
                                 try:
                                     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -90,10 +90,10 @@ class PassengerLoginSerializer(serializers.Serializer):
                                     data["token"] = token
                                 except Exception as e:
                                     raise serializers.ValidationError("Error in generating token")
-                        except:
-                            raise serializers.ValidationError("User is not active")
-                except:
-                    raise serializers.ValidationError("Unable to login with provided credentials")
+                            else:
+                                raise serializers.ValidationError("User is not active")
+                    else:
+                        raise serializers.ValidationError("Unable to login with provided credentials")
 
         except:
             raise serializers.ValidationError("Must provide both username and password")
@@ -122,7 +122,7 @@ class DriverSerializer(serializers.ModelSerializer):
         driver = Driver.objects.create(name=user, **validated_data)
 
         return driver
-    #complex to python native > json
+    #complex to python native > Json
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret['name'].pop('password', None)

@@ -66,7 +66,11 @@ class PassengerDetail(APIView):
     permission_classes = []
 
     def get(self, request, format=None):
-        passenger = Passenger.objects.get(user=request.user)
+        try:
+            passenger = Passenger.objects.get(user=request.user)
+        except Passenger.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = PassengerSerializer(passenger)
         return Response(serializer.data)
 
@@ -106,18 +110,20 @@ class ChangeDriverLike(APIView):
 
     def post(self, request, format=None):
         try:
-            
-            driver = Driver.objects.get(name__username=request.data['username'])
-            print(driver,'foinf')
+            try:
+                driver = Driver.objects.get(name__username=request.data['username'])
+            except:
+                return Response({"message":"Driver does not exist"})
+
             if 'like' in request.data and 'dislike' in request.data:
                 return Response({"message":"expects {'username':'****','like':'+' or 'dislike':'-' }"})
-
+            
             if request.data.get('like')=='+':
                 driver.positive_likes += 1
             elif request.data.get('dislike')=='-':
                 driver.negative_likes += 1
             driver.save()
-            return Response({'message':f"Driver [{request.data['username']}] like/dislike updated"},status=status.HTTP_200_OK)
+            return Response({'message':f"Driver [{request.data['username']}] rating updated"},status=status.HTTP_200_OK)
         except:
             return Response({"message":"expects {'username':'****','like':'+' or 'dislike':'-' }"})
 
