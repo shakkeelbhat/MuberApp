@@ -45,7 +45,7 @@ Format:
 ----------------------------------
 ## passengers/login/
 ```
-* Each login increases the user's total_rides by 1
+* Each login increases the passenger's total_rides by 1
 
 
 
@@ -61,8 +61,8 @@ Format:
 ## passengers/detail/
 ```
 Requires [JSONWebTokenAuthentication].
-Send a get request to fetch the user's details.
-Send a patch request to update the user's details.
+Send a get request to fetch the passenger's details.
+Send a patch request to update the passenger's details.
 Format:
 {"user":{
         "username":  "passenger1",
@@ -88,8 +88,11 @@ Format:
     },
     "car_model": "Hondacity",
     "age":23,
-    "languages":"UR"
+    "languages":"UR"            
 }
+
+Note:  lANGUAGES can have a values 'ET','UR','HI','OT'
+
 Creates a driver instance and sets the read-only attributes "positive_likes","negative_likes" to 0.
 LANGUAGES = [
         ('EN', 'English'),
@@ -125,6 +128,7 @@ Format:
 "car_model":"Audi",
 "languages": "EN"
 }
+Note: Note:  lANGUAGES can have a values 'ET','UR','HI','OT'
 ```
 ----------------------------------
 ## passengers/like/
