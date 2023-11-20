@@ -44,8 +44,11 @@ Format:
 ```
 ----------------------------------
 ## passengers/login/
-### Each login increases the user's total_rides by 1
 ```
+* Each login increases the user's total_rides by 1
+
+
+
 Send a post request to log in as a passenger. Returns a jwt token to be utilized for other endpoints that require [JSONWebTokenAuthentication]
 Format:
 {
